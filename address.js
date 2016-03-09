@@ -18,8 +18,11 @@
      * 3、提供丰富的回调接口：onInit、onSelectChangeBegin、onSelectChange、onSelectChangeEnd
      */
 
-    var mzAddress = function(opts){
-        dom: {},
-        api: {}
+    var mzAddress = function(container,opts){
+        var defaults = {
+
+        }
     };
+
+    mzAddress.prototype.init
 }));
