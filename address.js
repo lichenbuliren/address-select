@@ -8,9 +8,14 @@
 (function(){
     'use strict'
 
+    // var address = new MZAddress('container',{
+
+    // });
+
     /**
      * 最多四个层级的地址库
      * 每个地址库的数据接口可能不一致，需要可配置
+     * 每个数据层级支持自定义命名空间，默认使用select的name属性作为命名空间
      * 支持本地 json 文件数据作为数据源
      * 可自定义 class 类名
      * 支持各种回调事件
@@ -28,6 +33,10 @@
         var defaults = {
             // 全局数据命名空间
             globalNameSpace: 'MZAddress',
+            provinceNameSpace: 'province',
+            cityNameSpace: 'city',
+            countyNameSpace: 'county',
+            townNameSpace: 'town',
             // 默认容器class
             containerClass: 'mzaddress',
             // 省份
@@ -90,7 +99,15 @@
         }
 
         // 入口
-        _this.init = function(){
+        _this.init = function(callbacks){
+
+            _this.initModule();
+
+
+            _this.attachEvents();
+        };
+
+        _this.initModule = function(callbacks){
             var $container = $(container);
             _this.dom.$container = $container;
             _this.dom.$province = $container.find('.' + _this.settings.provinceClass);
@@ -98,10 +115,20 @@
             _this.dom.$county = $container.find('.' + _this.settings.countyClass);
             _this.dom.$town = $container.find('.' + _this.settings.townClass);
 
-            window[_this.settings.globalNameSpace] = {};
+            // 全局数据对象
             // 初始化本地数据
-            _this.attachEvents();
-        };
+            window[_this.settings.globalNameSpace] = window[_this.settings.globalNameSpace] || {};
+
+            // 设置命名空间和接口API信息
+            for (key in _this.dom) {
+                if (_this.dom.hasOwnProperty(key) && _this.dom[key].length > 0) {
+                    var namespace = _this.dom[key].data('namespace'),
+                        dataUrl = _this.dom[key].data('url');
+                    window[_this.settings.globalNameSpace][namespace] = window[_this.settings.globalNameSpace][namespace] || {};
+                    _this.api[namespace][url] = dataUrl;
+                }
+            }
+        }
 
         // 事件绑定
         _this.attachEvents = function(){
